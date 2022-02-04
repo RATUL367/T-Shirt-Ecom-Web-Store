@@ -16,8 +16,9 @@ import re
 def generate_session_token(length=10):
     return ''.join(random.SystemRandom().choice([chr(i) for i in range(97, 123)] + [str(i) for i in range(10)]) for _ in range(length))
 
-@csrf_exempt
+
 # Signin view
+@csrf_exempt
 def signin(request):
     if not request.method == 'POST':
         return JsonResponse({'error': 'Send a post request with valid parameter only'})
@@ -39,8 +40,8 @@ def signin(request):
     try:
         user = UserModel.objects.get(email = username)
         if user.check_password(password):
-            user_dict = UserModel.objects.filter(email = username).values().first()
-            user_dict.pop('password')
+            usr_dict = UserModel.objects.filter(email = username).values().first()
+            usr_dict.pop('password')
             if user.session_token != "0":
                 user.session_token = "0"
                 user.save()
@@ -49,7 +50,7 @@ def signin(request):
             user.session_token = token
             user.save()
             login(request, user)
-            return JsonResponse({'token':token, 'user': user_dict})
+            return JsonResponse({'token':token, 'user': usr_dict})
         else:
             return JsonResponse({'error':'Invalid Password'})
 
